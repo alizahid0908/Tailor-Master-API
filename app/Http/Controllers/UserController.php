@@ -21,7 +21,7 @@ class UserController extends Controller
             'phone' => 'required|string|max:11|min:11',
             'password' => 'required|string|min:6',
         ]);
-    
+        dd($validatedData);
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -38,14 +38,17 @@ class UserController extends Controller
     {   
         $credentials = $request->only('email', 'password');
         $user = User::where('email', $credentials['email'])->first();
-
-                if ($user && Hash::check($credentials['password'], $user->password)) {
-                    $token = $user->createToken('UserToken')->plainTextToken;
-                    return response()->json(['message' => 'User logged in successfully', 'access_token' => $token, 'user_name' => $user->name]);
-                } else {
-                    return response()->json(['message' => 'Invalid credentials'], 401);
-                }
+    
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                $token = $user->createToken('UserToken')->plainTextToken;
+                return response()->json(['message' => 'User logged in successfully', 'access_token' => $token, 'user_name' => $user->name]);
+            } else {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+        } else {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
     }
-
-
 }

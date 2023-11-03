@@ -142,15 +142,6 @@ class SizeController extends Controller
     {
         $user = Auth::user();
 
-        // $validator = Validator::make(['customer_id' => $customer_id], [
-        //     'customer_id' => 'required|exists:customers,id',
-        // ]);
-
-        // if ($validator->fails()) {
-        //     return response()->json(['message' => 'Customer not found'], 404);
-        // }
-
-
         $customer = Customer::find($customer_id);
     
         if (!$customer) {
