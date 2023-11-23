@@ -68,7 +68,8 @@ class OrderController extends Controller
     
        $transformedOrders = $orders->getCollection()->map(function ($order) {
            return [
-               'id' => $order->id,
+               'order_id' => $order->id,
+               'customer_id' => $order->customer->id,
                'customer_name' => $order->customer->name,
                'size' => $order->orderItem->map(function ($item) {
                    return [
