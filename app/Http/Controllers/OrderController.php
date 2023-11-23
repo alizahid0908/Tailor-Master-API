@@ -62,41 +62,43 @@ class OrderController extends Controller
 
     public function index()
     {
-       $orders = Order::with('customer', 'orderItem.size')
-           ->where('user_id', Auth::user()->id)
-           ->paginate(10);
+        $orders = Order::with('customer', 'orderItem.size')
+            ->where('user_id', Auth::user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
     
-       $transformedOrders = $orders->getCollection()->map(function ($order) {
-           return [
-               'order_id' => $order->id,
-               'customer_id' => $order->customer->id,
-               'customer_name' => $order->customer->name,
-               'size' => $order->orderItem->map(function ($item) {
-                   return [
-                      'id' => $item->size->id,
-                      'quantity' => $item->quantity,
-                      'size_name' => $item->size->size_name,
-                      'collar_size' => $item->size->collar_size,
-                      'chest_size' => $item->size->chest_size,
-                      'sleeve_length' => $item->size->sleeve_length,
-                      'cuff_size' => $item->size->cuff_size,
-                      'shoulder_size' => $item->size->shoulder_size,
-                      'waist_size' => $item->size->waist_size,
-                      'shirt_length' => $item->size->shirt_length,
-                      'legs_length' => $item->size->legs_length,
-                      'description' => $item->size->description,
-                      'category' => $item->size->category,
-                   ];
-               }),
-               'price' => $order->price,
-               'status' => $order->status,
-           ];
-       });
+        $transformedOrders = $orders->getCollection()->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer_name' => $order->customer->name,
+                'size' => $order->orderItem->map(function ($item) {
+                    return [
+                        'id' => $item->size->id,
+                        'quantity' => $item->quantity,
+                        'size_name' => $item->size->size_name,
+                        'collar_size' => $item->size->collar_size,
+                        'chest_size' => $item->size->chest_size,
+                        'sleeve_length' => $item->size->sleeve_length,
+                        'cuff_size' => $item->size->cuff_size,
+                        'shoulder_size' => $item->size->shoulder_size,
+                        'waist_size' => $item->size->waist_size,
+                        'shirt_length' => $item->size->shirt_length,
+                        'legs_length' => $item->size->legs_length,
+                        'description' => $item->size->description,
+                        'category' => $item->size->category,
+                    ];
+                }),
+                'price' => $order->price,
+                'status' => $order->status,
+                'created_at' => $order->created_at->format('Y-m-d'), // Include the 'created_at' field in the response
+            ];
+        });
     
-       $orders->setCollection($transformedOrders);
+        $orders->setCollection($transformedOrders);
     
-       return response()->json(['orders' => $orders]);
+        return response()->json(['orders' => $orders]);
     }
+    
 
     public function show(Request $request, $id)
     {
