@@ -62,8 +62,39 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::where('user_id', Auth::user()->id)->paginate(10);
-        return response()->json(['orders' => $orders]);
+       $orders = Order::with('customer', 'orderItem.size')
+           ->where('user_id', Auth::user()->id)
+           ->paginate(10);
+    
+       $transformedOrders = $orders->getCollection()->map(function ($order) {
+           return [
+               'id' => $order->id,
+               'customer_name' => $order->customer->name,
+               'size' => $order->orderItem->map(function ($item) {
+                   return [
+                      'id' => $item->size->id,
+                      'quantity' => $item->quantity,
+                      'size_name' => $item->size->size_name,
+                      'collar_size' => $item->size->collar_size,
+                      'chest_size' => $item->size->chest_size,
+                      'sleeve_length' => $item->size->sleeve_length,
+                      'cuff_size' => $item->size->cuff_size,
+                      'shoulder_size' => $item->size->shoulder_size,
+                      'waist_size' => $item->size->waist_size,
+                      'shirt_length' => $item->size->shirt_length,
+                      'legs_length' => $item->size->legs_length,
+                      'description' => $item->size->description,
+                      'category' => $item->size->category,
+                   ];
+               }),
+               'price' => $order->price,
+               'status' => $order->status,
+           ];
+       });
+    
+       $orders->setCollection($transformedOrders);
+    
+       return response()->json(['orders' => $orders]);
     }
 
     public function show(Request $request, $id)
@@ -79,12 +110,7 @@ class OrderController extends Controller
                 'message' => 'Order not found.',
             ], 404);
         }
-    
-        // // Calculate the total price based on order items
-        // $totalPrice = $order->orderItem->sum(function ($item) {
-        //     return $item->quantity * $item->size->price;
-        // });
-    
+        
         $response = [
             'id' => $order->id,
             'customer_name' => $order->customer->name,
