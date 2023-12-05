@@ -23,6 +23,7 @@ class OrderController extends Controller
             'quantity' => 'required|array|min:1',
             'quantity.*' => 'integer|min:1',
             'price' => 'required|numeric',
+            'due_date' => 'required|date'
         ], [
             'customer_id.exists' => 'The selected customer does not exist.',
         ]);
@@ -32,7 +33,8 @@ class OrderController extends Controller
     
             $order = new Order([
                 'customer_id' => $request->input('customer_id'),
-                'price' => $request->input('price'), 
+                'price' => $request->input('price'),
+                'due_date' => $request->input('due_date')
             ]);
     
             $order->user_id = $user->id;
@@ -70,6 +72,7 @@ class OrderController extends Controller
         $transformedOrders = $orders->getCollection()->map(function ($order) {
             return [
                 'id' => $order->id,
+                'customer_id' => $order->customer_id,
                 'customer_name' => $order->customer->name,
                 'size' => $order->orderItem->map(function ($item) {
                     return [

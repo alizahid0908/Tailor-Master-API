@@ -36,6 +36,6 @@ class Size extends Model
 
     public function orderItem()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->belongsTo(OrderItem::class);
     }
 }

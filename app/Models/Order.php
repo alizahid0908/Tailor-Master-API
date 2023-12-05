@@ -13,7 +13,8 @@ class Order extends Model
         'customer_id',
         'user_id',
         'price',
-        'status'
+        'status',
+        'due_date'
     ];
 
     public function customer()
@@ -29,5 +30,10 @@ class Order extends Model
     public function orderItem()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(Size::class);
     }
 }
