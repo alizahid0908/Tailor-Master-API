@@ -121,22 +121,23 @@ class SizeController extends Controller
 
     public function delete($id)
     {
-        $user = Auth::user();
-        
-        if (Auth::user()->id !== $size->user_id) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-        
-        $size = Size::find($id);
+       $size = Size::find($id);
     
-        if (!$size) {
-            return response()->json(['message' => 'Size not found'], 404);
-        }
-
-        $size->delete();
-
-        return response()->json(['message' => 'Size deleted successfully']);
+       if (!$size) {
+           return response()->json(['message' => 'Size not found'], 404);
+       }
+    
+       $user = Auth::user();
+       
+       if (Auth::user()->id !== $size->user_id) {
+           return response()->json(['message' => 'Unauthorized'], 401);
+       }
+    
+       $size->delete();
+    
+       return response()->json(['message' => 'Size deleted successfully']);
     }
+    
     
     public function getByCustomer($customer_id)
     {
