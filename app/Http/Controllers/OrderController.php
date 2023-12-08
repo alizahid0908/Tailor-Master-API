@@ -69,33 +69,35 @@ class OrderController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     
-        $transformedOrders = $orders->getCollection()->map(function ($order) {
-            return [
-                'id' => $order->id,
-                'customer_id' => $order->customer_id,
-                'customer_name' => $order->customer->name,
-                'size' => $order->orderItem->map(function ($item) {
-                    return [
-                        'id' => $item->size->id,
-                        'quantity' => $item->quantity,
-                        'size_name' => $item->size->size_name,
-                        'collar_size' => $item->size->collar_size,
-                        'chest_size' => $item->size->chest_size,
-                        'sleeve_length' => $item->size->sleeve_length,
-                        'cuff_size' => $item->size->cuff_size,
-                        'shoulder_size' => $item->size->shoulder_size,
-                        'waist_size' => $item->size->waist_size,
-                        'shirt_length' => $item->size->shirt_length,
-                        'legs_length' => $item->size->legs_length,
-                        'description' => $item->size->description,
-                        'category' => $item->size->category,
-                    ];
-                }),
-                'price' => $order->price,
-                'status' => $order->status,
-                'created_at' => $order->created_at->format('Y-m-d'), // Include the 'created_at' field in the response
-            ];
-        });
+            $transformedOrders = $orders->getCollection()->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'customer_id' => $order->customer_id,
+                    'customer_name' => $order->customer->name,
+                    'size' => $order->orderItem->map(function ($item) {
+                        return $item->size ? [
+                            'id' => $item->size->id,
+                            'quantity' => $item->quantity,
+                            'size_name' => $item->size->size_name,
+                            'collar_size' => $item->size->collar_size,
+                            'chest_size' => $item->size->chest_size,
+                            'sleeve_length' => $item->size->sleeve_length,
+                            'cuff_size' => $item->size->cuff_size,
+                            'shoulder_size' => $item->size->shoulder_size,
+                            'waist_size' => $item->size->waist_size,
+                            'shirt_length' => $item->size->shirt_length,
+                            'legs_length' => $item->size->legs_length,
+                            'description' => $item->size->description,
+                            'category' => $item->size->category,
+                        ] : null;
+                    }),
+                    'price' => $order->price,
+                    'status' => $order->status,
+                    'deadline' => $order->due_date,
+                    'created_at' => $order->created_at->format('Y-m-d'),
+                ];
+             });
+             
     
         $orders->setCollection($transformedOrders);
     
