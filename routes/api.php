@@ -17,6 +17,8 @@ use App\Models\User;
 Route::post('user/register', [UserController::class, 'register']);
 Route::post('user/login', [UserController::class, 'login']);
 
+Route::post('user/logout', [UserController::class, 'logout'])->middleware('auth:api');
+
 // Size Routes
 Route::middleware('auth:api')->group(function () {
     Route::post('/customer/size', [SizeController::class, 'store']);

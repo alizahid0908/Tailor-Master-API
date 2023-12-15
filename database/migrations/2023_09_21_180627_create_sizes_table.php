@@ -15,14 +15,14 @@ return new class extends Migration
         Schema::create('sizes', function (Blueprint $table) {
             $table->id();
             $table->string('size_name'); 
-            $table->integer('collar_size')->nullable();
-            $table->integer('chest_size')->nullable();
-            $table->integer('sleeve_length')->nullable();
-            $table->integer('cuff_size')->nullable();
-            $table->integer('shoulder_size')->nullable();
-            $table->integer('waist_size')->nullable();
-            $table->integer('shirt_length')->nullable();
-            $table->integer('legs_length')->nullable();
+            $table->float('collar_size', 8, 2)->nullable();
+            $table->float('chest_size', 8, 2)->nullable();
+            $table->float('sleeve_length', 8, 2)->nullable();
+            $table->float('cuff_size', 8, 2)->nullable();
+            $table->float('shoulder_size', 8, 2)->nullable();
+            $table->float('waist_size', 8, 2)->nullable();
+            $table->float('shirt_length', 8, 2)->nullable();
+            $table->float('legs_length', 8, 2)->nullable();
             $table->string('description')->nullable();
             $table->enum('category', ['shirt_pant', 'kurta', 'blazer', 'kameez_shalwar']);
             $table->unsignedInteger('customer_id')->nullable()->onDelete('cascade');

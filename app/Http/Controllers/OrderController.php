@@ -62,42 +62,60 @@ class OrderController extends Controller
     }
     
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search', '');
+        $userId = Auth::user()->id;
+     
         $orders = Order::with('customer', 'orderItem.size')
-            ->where('user_id', Auth::user()->id)
-            ->orderBy('created_at', 'desc')
+            ->where('user_id', Auth::user()->id);
+     
+        if (!empty($search)) {
+            $orders->where(function ($query) use ($search) {
+                $query->where('id', 'like', '%' . $search . '%')
+                    ->orWhere('price', 'like', '%' . $search . '%')
+                    ->orWhere('status', 'like', '%' . $search . '%')
+                    ->orWhere('deadline', 'like', '%' . $search . '%')
+                    ->orWhereHas('customer', function ($query) use ($search) {
+                       $query->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('orderItem.size', function ($query) use ($search) {
+                       $query->where('size_name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+     
+        $orders = $orders->orderBy('created_at', 'desc')
             ->paginate(10);
-    
-            $transformedOrders = $orders->getCollection()->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'customer_id' => $order->customer_id,
-                    'customer_name' => $order->customer->name,
-                    'size' => $order->orderItem->map(function ($item) {
-                        return $item->size ? [
-                            'id' => $item->size->id,
-                            'quantity' => $item->quantity,
-                            'size_name' => $item->size->size_name,
-                            'collar_size' => $item->size->collar_size,
-                            'chest_size' => $item->size->chest_size,
-                            'sleeve_length' => $item->size->sleeve_length,
-                            'cuff_size' => $item->size->cuff_size,
-                            'shoulder_size' => $item->size->shoulder_size,
-                            'waist_size' => $item->size->waist_size,
-                            'shirt_length' => $item->size->shirt_length,
-                            'legs_length' => $item->size->legs_length,
-                            'description' => $item->size->description,
-                            'category' => $item->size->category,
-                        ] : null;
-                    }),
-                    'price' => $order->price,
-                    'status' => $order->status,
-                    'deadline' => $order->due_date,
-                    'created_at' => $order->created_at->format('Y-m-d'),
-                ];
-             });
-             
+
+        $transformedOrders = $orders->getCollection()->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer_id' => $order->customer_id,
+                'customer_name' => $order->customer->name,
+                'size' => $order->orderItem->map(function ($item) {
+                    return $item->size ? [
+                        'id' => $item->size->id,
+                        'quantity' => $item->quantity,
+                        'size_name' => $item->size->size_name,
+                        'collar_size' => $item->size->collar_size,
+                        'chest_size' => $item->size->chest_size,
+                        'sleeve_length' => $item->size->sleeve_length,
+                        'cuff_size' => $item->size->cuff_size,
+                        'shoulder_size' => $item->size->shoulder_size,
+                        'waist_size' => $item->size->waist_size,
+                        'shirt_length' => $item->size->shirt_length,
+                        'legs_length' => $item->size->legs_length,
+                        'description' => $item->size->description,
+                        'category' => $item->size->category,
+                    ] : null;
+                }),
+                'price' => $order->price,
+                'status' => $order->status,
+                'deadline' => $order->due_date,
+                'created_at' => $order->created_at->format('Y-m-d'),
+            ];
+        });
     
         $orders->setCollection($transformedOrders);
     

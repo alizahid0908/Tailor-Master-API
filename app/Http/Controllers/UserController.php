@@ -21,7 +21,7 @@ class UserController extends Controller
             'phone' => 'required|string|max:11|min:11',
             'password' => 'required|string|min:6',
         ]);
-        dd($validatedData);
+
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
@@ -51,4 +51,20 @@ class UserController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
     }
+
+        
+    public function logout(Request $request)
+    {
+        try {
+        $user = $request->user(); // Retrieve the authenticated user
+    
+        // Revoke the user's token
+        $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
+    
+        return response()->json(['message' => 'Logged out successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Unable to logout'], 500);
+        }
+    }
+
 }

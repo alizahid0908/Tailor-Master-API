@@ -9,11 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::where('user_id', Auth::user()->id)->paginate(10);
-        return response()->json(['customers' => $customers]);
-    }
+       $search = $request->input('search', '');
+       $userId = Auth::user()->id;
+    
+       $customers = Customer::query();
+    
+       if (!empty($search)) {
+           $customers->where(function ($query) use ($search) {
+               $query->where('id', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('phone', 'like', '%' . $search . '%');
+           });
+       }
+    
+       $customers->where('user_id', $userId);   
+    
+       $customers = $customers->paginate(10);
+    
+       return response()->json(['customers' => $customers]);
+    }    
 
     public function show($id)
     {
