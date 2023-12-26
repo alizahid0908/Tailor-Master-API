@@ -48,6 +48,10 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/order/{id}', [OrderController::class, 'delete']);
 }); 
 
+Route::fallback(function (){
+    abort(404, 'API resource not found');
+});
+
 
 
 

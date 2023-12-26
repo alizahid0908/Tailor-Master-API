@@ -11,34 +11,57 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 
-    
     public function register(Request $request)
     {
-        
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'phone' => 'required|string|max:11|min:11',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'phone' => $validatedData['phone'],
-            'password' => Hash::make($validatedData['password']),
-        ]);
+       $validator = Validator::make($request->all(), [
+           'name' => 'required|string|max:255',
+           'email' => 'required|string|email',
+           'phone' => 'required|string|max:11|min:11',
+           'password' => 'required|string|min:6',
+       ]);
     
-        // You can customize the response as needed
-        return response()->json(['message' => 'User registered successfully']);
+       if ($validator->fails()) {
+           return response()->json(['errors' => $validator->errors()], 400);
+       }
+    
+       $emailExists = User::where('email', $request->email)->exists();
+    
+       if ($emailExists) {
+           return response()->json(['message' => 'This email is already in use'], 400);
+       }
+    
+       try {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => Hash::make($request->password),
+        ]);
+  
+            return response()->json(['message' => 'User registered successfully']);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'An error occurred while registering the user'], 500);
+        }
+
     }
+    
 
 
     public function login(Request $request)
     {   
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+     
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+     
         $credentials = $request->only('email', 'password');
+
         $user = User::where('email', $credentials['email'])->first();
-    
+
         if ($user && Hash::check($credentials['password'], $user->password)) {
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
