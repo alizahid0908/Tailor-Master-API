@@ -30,7 +30,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        return response()->json($exception->getMessage(), $exception->getCode);
+        return response()->json($exception->getMessage(), $exception->getCode());
     }
 
 }
