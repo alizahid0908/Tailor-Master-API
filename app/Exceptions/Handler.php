@@ -30,7 +30,15 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        return response()->json($exception->getMessage(), $exception->getCode());
+       $code = $exception->getCode();
+       $message = $exception->getMessage();
+    
+       // Ensure the status code is in the valid range
+       if ($code < 100 || $code > 599) {
+           $code = 500;
+       }
+    
+       return response()->json(['error' => $message], $code);
     }
 
 }
