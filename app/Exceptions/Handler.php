@@ -33,11 +33,6 @@ class Handler extends ExceptionHandler
        $code = $exception->getCode();
        $message = $exception->getMessage();
     
-       // Ensure the status code is in the valid range
-       if ($code < 100 || $code > 599) {
-           $code = 500;
-       }
-    
        return response()->json(['error' => $message], $code);
     }
 
