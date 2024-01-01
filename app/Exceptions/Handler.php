@@ -30,10 +30,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-       $code = $exception->getCode();
-       $message = $exception->getMessage();
-    
-       return response()->json(['error' => $message], $code);
+        return response()->json('No Data found', 404);
     }
 
 }
