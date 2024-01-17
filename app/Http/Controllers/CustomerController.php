@@ -70,7 +70,7 @@ class CustomerController extends Controller
 
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:11|min:11,' . $id,
+            'phone' => 'required|string|max:11|min:11,'
         ]);
 
         $customer = Customer::find($id);
