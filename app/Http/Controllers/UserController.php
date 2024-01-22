@@ -25,9 +25,14 @@ class UserController extends Controller
        }
     
        $emailExists = User::where('email', $request->email)->exists();
+       $phoneExists = User::where('phone', $request->phone)->exist();
     
        if ($emailExists) {
            return response()->json(['message' => 'This email is already in use'], 400);
+       }
+
+       if ($phoneExists) {
+            return response()->json(['message' => 'This phone number is already in use'], 400);
        }
     
        try {
