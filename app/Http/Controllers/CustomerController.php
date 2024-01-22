@@ -28,7 +28,10 @@ class CustomerController extends Controller
     
        $customers = $customers->paginate(10);
     
-       return response()->json(['customers' => $customers]);
+       return response()->json([
+        'customers' => $customers,
+        'total_pages' => $customers->lastPage(),
+        ]);
     }    
 
     public function show($id)
