@@ -1,5 +1,6 @@
 <?php
-
+use App\Models\Order;
+use App\Models\Size;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,8 +12,8 @@ class CreateOrderItemsTable extends Migration
 
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('order_id')->nullable()->onDelete('cascade');
-            $table->unsignedInteger('size_id')->nullable()->onDelete('cascade');
+            $table->foreignIdFor(Order::class)->constrained()->onCascadeDelete();
+            $table->foreignIdFor(Size::class)->constrained()->onCascadeDelete();
             $table->integer('quantity')->required();
             $table->timestamps();
 

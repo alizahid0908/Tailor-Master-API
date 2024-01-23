@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,8 +27,8 @@ return new class extends Migration
             $table->float('legs_length', 8, 2)->nullable();
             $table->string('description')->nullable();
             $table->enum('category', ['shirt_pant', 'kurta', 'blazer', 'kameez_shalwar']);
-            $table->unsignedInteger('customer_id')->nullable()->onDelete('cascade');
-            $table->unsignedInteger('user_id')->nullable()->onDelete('cascade');    
+            $table->foreignIdFor(Customer::class)->constrained()->onCascadeDelete();
+            $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();   
             $table->timestamps();
         });
     }

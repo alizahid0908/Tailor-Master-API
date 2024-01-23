@@ -1,5 +1,6 @@
     <?php
 
+    use App\Models\User;
     use Illuminate\Database\Migrations\Migration;
     use Illuminate\Database\Schema\Blueprint;
     use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@
                 $table->id(); 
                 $table->string('name'); 
                 $table->string('phone');
-                $table->unsignedInteger('user_id')->nullable()->onDelete('cascade');
+                $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();
                 $table->timestamps(); 
             });
         }
