@@ -25,7 +25,7 @@ class UserController extends Controller
        }
     
        $emailExists = User::where('email', $request->email)->exists();
-       $phoneExists = User::where('phone', $request->phone)->exist();
+       $phoneExists = User::where('phone', $request->phone)->exists();
     
        if ($emailExists) {
            return response()->json(['message' => 'This email is already in use'], 400);
@@ -50,23 +50,21 @@ class UserController extends Controller
 
     }
     
-
-
     public function login(Request $request)
     {   
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'identifier' => 'required',
             'password' => 'required',
         ]);
-     
+    
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
-     
-        $credentials = $request->only('email', 'password');
-
-        $user = User::where('email', $credentials['email'])->first();
-
+    
+        $credentials = $request->only('identifier', 'password');
+    
+        $user = User::where('email', $credentials['identifier'])->orWhere('phone', $credentials['identifier'])->first();
+    
         if ($user && Hash::check($credentials['password'], $user->password)) {
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
@@ -80,7 +78,7 @@ class UserController extends Controller
         }
     }
 
-        
+    
     public function logout(Request $request)
     {
         try {
