@@ -53,7 +53,7 @@ class UserController extends Controller
     public function login(Request $request)
     {   
         $validator = Validator::make($request->all(), [
-            'identifier' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
     
@@ -61,9 +61,9 @@ class UserController extends Controller
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
         }
     
-        $credentials = $request->only('identifier', 'password');
+        $credentials = $request->only('email', 'password');
     
-        $user = User::where('email', $credentials['identifier'])->orWhere('phone', $credentials['identifier'])->first();
+        $user = User::where('email', $credentials['email'])->first();
     
         if ($user && Hash::check($credentials['password'], $user->password)) {
             if (Auth::attempt($credentials)) {
