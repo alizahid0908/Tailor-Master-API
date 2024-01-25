@@ -50,37 +50,40 @@ class UserController extends Controller
 
     }
 
-public function login(Request $request)
-{   
-    $validator = Validator::make($request->all(), [
-        'identifier' => 'required',
-        'password' => 'required',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
-    }
-
-    $credentials = $request->only('identifier', 'password');
-
-    if (filter_var($credentials['identifier'], FILTER_VALIDATE_EMAIL)) {
-        $user = User::where('email', $credentials['identifier'])->first();
-    } else {
-        $user = User::where('phone', $credentials['identifier'])->first();
-    }
-
-    if ($user && Hash::check($credentials['password'], $user->password)) {
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('UserToken')->plainTextToken;
-            return response()->json(['message' => 'User logged in successfully', 'access_token' => $token, 'user_name' => $user->name]);
+    public function login(Request $request)
+    {   
+        $validator = Validator::make($request->all(), [
+            'identifier' => 'required',
+            'password' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 422);
+        }
+    
+        $credentials = $request->only('identifier', 'password');
+    
+        if (filter_var($credentials['identifier'], FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $credentials['identifier'])->first();
+            $attemptCredentials = ['email' => $credentials['identifier'], 'password' => $credentials['password']];
+        } else {
+            $user = User::where('phone', $credentials['identifier'])->first();
+            $attemptCredentials = ['phone' => $credentials['identifier'], 'password' => $credentials['password']];
+        }
+    
+        if ($user && Hash::check($credentials['password'], $user->password)) {
+            if (Auth::attempt($attemptCredentials)) {
+                $user = Auth::user();
+                $token = $user->createToken('UserToken')->plainTextToken;
+                return response()->json(['message' => 'User logged in successfully', 'access_token' => $token, 'user_name' => $user->name]);
+            } else {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
         } else {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
-    } else {
-        return response()->json(['message' => 'Invalid credentials'], 401);
     }
-}
+    
 
     public function logout(Request $request)
     {
