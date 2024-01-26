@@ -59,11 +59,11 @@ class CustomerController extends Controller
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|max:11|min:11',
-                'user_id' => 'required|exists:users,id',
             ]);
     
+            $data['user_id'] = $user->id; // Add user_id to the data array
+    
             $customer = Customer::create($data);
-            // $customer->user_id = $user->id;
             $customer->save();
     
             return response()->json(['message' => 'Customer registered successfully', 'data' => $customer], 201);
@@ -71,6 +71,7 @@ class CustomerController extends Controller
             return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
     }
+    
     
 
     public function update(Request $request, $id)
