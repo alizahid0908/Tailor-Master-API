@@ -59,8 +59,9 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:11|min:11',
         ]);
-        dd($data);
+        // dd($data);
         $customer = Customer::create($data);
+        dd("jfjehfjeh");
         $customer->user_id = $user->id;
         $customer->save();
 
