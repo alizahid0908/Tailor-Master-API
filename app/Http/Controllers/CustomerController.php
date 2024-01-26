@@ -59,10 +59,11 @@ class CustomerController extends Controller
             $data = $request->validate([
                 'name' => 'required|string|max:255',
                 'phone' => 'required|string|max:11|min:11',
+                'user_id' => 'required|exists:users,id',
             ]);
     
             $customer = Customer::create($data);
-            $customer->user_id = $user->id;
+            // $customer->user_id = $user->id;
             $customer->save();
     
             return response()->json(['message' => 'Customer registered successfully', 'data' => $customer], 201);
