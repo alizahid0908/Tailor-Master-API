@@ -53,20 +53,24 @@ class CustomerController extends Controller
 
     public function create(Request $request)
     {
-        $user = Auth::user();
-
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:11|min:11',
-        ]);
-        // dd($data);
-        $customer = Customer::create($data);
-        dd("jfjehfjeh");
-        $customer->user_id = $user->id;
-        $customer->save();
-
-        return response()->json(['message' => 'Customer registered successfully', 'data' => $customer], 201);
+        try {
+            $user = Auth::user();
+    
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:11|min:11',
+            ]);
+    
+            $customer = Customer::create($data);
+            $customer->user_id = $user->id;
+            $customer->save();
+    
+            return response()->json(['message' => 'Customer registered successfully', 'data' => $customer], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+        }
     }
+    
 
     public function update(Request $request, $id)
     {
