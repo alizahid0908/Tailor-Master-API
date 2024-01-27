@@ -100,7 +100,7 @@ class CustomerController extends Controller
     {
         try {
             $customer = Customer::find($id);
-    
+            dd($customer);
             if (Auth::user()->id !== $customer->user_id) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
