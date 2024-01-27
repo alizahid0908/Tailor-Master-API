@@ -98,21 +98,26 @@ class CustomerController extends Controller
 
     public function delete($id)
     {
-       $customer = Customer::find($id);
-    
-       if (!$customer) {
-           return response()->json(['message' => 'Customer not found'], 404);
-       }
-    
-       $user = Auth::user();
-       
-       if (Auth::user()->id !== $customer->user_id) {
-           return response()->json(['message' => 'Unauthorized'], 401);
-       }
-    
-       $customer->delete();
-    
-       return response()->json(['message' => 'Customer deleted successfully']);
+       try{
+        $customer = Customer::find($id);
+        
+        if (!$customer) {
+            return response()->json(['message' => 'Customer not found'], 404);
+        }
+        
+        $user = Auth::user();
+        
+        if (Auth::user()->id !== $customer->user_id) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
+        $customer->delete();
+        
+        return response()->json(['message' => 'Customer deleted successfully']);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+
+        }
     }
     
 
