@@ -16,7 +16,7 @@
                 $table->id(); 
                 $table->string('name'); 
                 $table->string('phone');
-                $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();
+                $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
                 $table->timestamps(); 
             });
         }

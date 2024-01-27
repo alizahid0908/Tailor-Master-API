@@ -27,8 +27,8 @@ return new class extends Migration
             $table->float('legs_length', 8, 2)->nullable();
             $table->string('description')->nullable();
             $table->enum('category', ['shirt_pant', 'kurta', 'blazer', 'kameez_shalwar']);
-            $table->foreignIdFor(Customer::class)->constrained()->onCascadeDelete();
-            $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();   
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();   
             $table->timestamps();
         });
     }

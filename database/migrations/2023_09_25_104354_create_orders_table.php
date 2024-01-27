@@ -12,8 +12,8 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Customer::class)->constrained()->onCascadeDelete();
-            $table->foreignIdFor(User::class)->constrained()->onCascadeDelete();
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->bigInteger('price')->required(); 
             $table->enum('status', ['pending', 'delivered'])->default('pending');
             $table->timestamps();
